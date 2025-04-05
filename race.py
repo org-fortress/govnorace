@@ -1,4 +1,5 @@
 from pygame import *
+from random import randint
 window = display.set_mode((700, 500))
 display.set_caption('Гонки')
 background = transform.scale(image.load("асфальт.png"), (700,500))
@@ -15,13 +16,40 @@ class GameSprite(sprite.Sprite):
 class Enemy(GameSprite):
     def update(self):
         self.rect.y += self.speed
-        global lost
         if self.rect.y >= 500:
-            self.rect.x = randint(80, 500 - 80)
+            self.rect.x = randint(50,550)
             self.rect.y = 0
-            self.speed = randint(2, 4)
-            lost += 1
+            self.speed = 4
             
+player = GameSprite('машинка.png',0,280,350,100,150)
+enemy = Enemy('машинка.png',1,280,500,100,150)
+monsters = sprite.Group()
+for i in range(2):
+    enemy = Enemy('машинка1.png', 4, randint(0,550), 0, 100, 150)
+    monsters.add(enemy)
+clock = time.Clock()
+FPS = 60
+game = True
+finish = False
+while game:
+    if finish != True:
+        window.blit(background, (0,0))
+        monsters.update()
+        monsters.draw(window)
+        player.update()
+        player.reset()
+        if sprite.spritecollide(player, monsters, False):
+            finish = True  
+    display.update()
+    for e in event.get():
+        if e.type == QUIT:
+            game = False
+        if e.type == KEYDOWN:
+            if e.key == K_a and player.rect.x > 30:
+                player.rect.x += -250
+            if e.key == K_d and player.rect.x < 530:
+                player.rect.x += 250
+    clock.tick(FPS)
 player = GameSprite('машинка.png',0,280,350,100,150)
 clock = time.Clock()
 FPS = 60
